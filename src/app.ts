@@ -9,6 +9,13 @@ import { SESSION_SECRET } from '../src/utils/secrets';
 const RedisClient = redis.createClient();
 const RedisStore = connectRedis(session);
 
+RedisClient.on("connect", () => {
+    console.log('Redis client connected');
+});
+RedisClient.on('error', function (err) {
+    console.log('Something went wrong ' + err);
+});
+
 var app: express.Express = express();
 
 app.use(bodyParser.json());
