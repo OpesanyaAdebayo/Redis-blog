@@ -1,2 +1,2 @@
-# Redis-shop
-Building a shopping application with Redis
+# Redis-blog
+Building a blogging application with Redis
