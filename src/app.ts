@@ -1,20 +1,14 @@
 import express, { Request, Response } from "express";
-import { NextFunction } from 'connect';
 import bodyParser from "body-parser";
 import session from 'express-session';
-import redis from 'redis';
 import connectRedis from 'connect-redis';
-import { SESSION_SECRET } from '../src/utils/secrets';
 
-const RedisClient = redis.createClient();
+import { RedisClient } from './database/setup';
+import { SESSION_SECRET } from './utils/secrets';
+// import { checkCreatePost, checkSignup } from './utils/validator';
+import { checkSignup } from './utils/validator';
+
 const RedisStore = connectRedis(session);
-
-RedisClient.on("connect", () => {
-    console.log('Redis client connected');
-});
-RedisClient.on('error', function (err) {
-    console.log('Something went wrong ' + err);
-});
 
 var app: express.Express = express();
 
@@ -28,8 +22,18 @@ app.use(session({
     store: new RedisStore({ client: RedisClient })
 }));
 
-import * as homeController from './controllers/home';
+// import * as postsController from './controllers/posts';
+import * as usersController from './controllers/users';
 
-app.get('/', homeController.index);
+app.get('/', usersController.getHome);
+app.get('/signup', usersController.getSignup);
+app.post('/signup', checkSignup, usersController.postSignup);
+// app.post('/post', checkCreatePost, postsController.createPost);
+
+app.use((req: Request, res: Response) => {
+    if (req.path !== '/' && req.path !== '/login' && req.path !== '/signup' && req.path !== '/post') {
+        res.sendStatus(404)
+    }
+});
 
 export default app;
