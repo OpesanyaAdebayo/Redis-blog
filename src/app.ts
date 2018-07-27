@@ -26,6 +26,7 @@ app.use(session({
 import * as usersController from './controllers/users';
 
 app.get('/', usersController.getHome);
+app.get('/logout', usersController.getLogOut);
 app.get('/signup', usersController.getSignup);
 app.post('/signup', checkSignup, usersController.postSignup);
 // app.post('/post', checkCreatePost, postsController.createPost);
