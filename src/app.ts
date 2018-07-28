@@ -8,7 +8,7 @@ import bluebird from 'bluebird';
 import { RedisClient } from './database/redis';
 import { MLAB_URI, SESSION_SECRET } from './utils/secrets';
 // import { checkCreatePost, checkSignup } from './utils/validator';
-import { checkSignup } from './utils/validator';
+import { checkSignup, checkLogin } from './utils/validator';
 
 const RedisStore = connectRedis(session);
 
@@ -36,9 +36,11 @@ app.use(session({
 import * as usersController from './controllers/users';
 
 app.get('/', usersController.getHome);
-app.get('/logout', usersController.getLogOut);
+app.get('/login', usersController.getLogin);
 app.get('/signup', usersController.getSignup);
-app.post('/signup', checkSignup, usersController.postSignup);
+app.get('/logout', usersController.getLogOut);
+app.post('/login', checkSignup, usersController.postLogin);
+app.post('/signup', checkLogin, usersController.postSignup);
 // app.post('/post', checkCreatePost, postsController.createPost);
 
 app.use((req: Request, res: Response) => {
