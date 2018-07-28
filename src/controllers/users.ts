@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import { NextFunction } from "connect";
 import { validationResult } from 'express-validator/check';
-import v1 from 'uuid';
-import bcrypt from 'bcrypt';
+
 import redis from 'redis';
 
-import { RedisClient, saveUser } from '../database/setup';
+import { RedisClient, saveUser } from '../database/redis';
+import { default as User, userType, } from '../models/User';
 export let getHome = (req: Request, res: Response, next: NextFunction) => {
     if (req.session!.userID) {
         return res
@@ -52,35 +52,28 @@ export let postSignup = (req: Request, res: Response, next: NextFunction) => {
             error: errors.array()
         });
     }
-    RedisClient.SMEMBERS("userEmails", (err, emails: string[]) => {
-        if (emails.indexOf(req.body.email) !== -1) {
-            return res.status(401).json({
-                error: "someone already registered with this email"
-            });
+
+    const user = new User({
+        email: req.body.email,
+        password: req.body.password
+    });
+
+    User.findOne({ email: req.body.email }, (err, existingUser) => {
+        if (err) return next(err);
+        if (existingUser) {
+            res
+                .status(401)
+                .json({ error: "account with that email already exists." });
         }
-
-        let userID = v1();
-
-        bcrypt.genSalt(10, (err, salt) => {
-            if (err) {
-                return next(err);
-            }
-            bcrypt.hash(req.body.password, salt, (err, hash) => {
-                if (err) {
-                    return next(err);
-                }
-                let userPassword: string = hash;
-
-                saveUser(userID, req.body.email, userPassword);
-
-                req.session!.userID = userID;
-
-                return res.status(302).json({
-                    message: "User successfully created and redirected to dashboard"
-                });
+        user
+            .save()
+            .then(savedUser => {
+                req.session!.userID = savedUser._id.toString();
+                return res.status(302).json({ message: "redirected to dashboard" });
+            })
+            .catch(err => {
+                if (err) return next(err);
             });
-        });
-
     });
 
 };

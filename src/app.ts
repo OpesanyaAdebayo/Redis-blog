@@ -2,9 +2,11 @@ import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import session from 'express-session';
 import connectRedis from 'connect-redis';
+import mongoose from 'mongoose';
+import bluebird from 'bluebird';
 
-import { RedisClient } from './database/setup';
-import { SESSION_SECRET } from './utils/secrets';
+import { RedisClient } from './database/redis';
+import { MLAB_URI, SESSION_SECRET } from './utils/secrets';
 // import { checkCreatePost, checkSignup } from './utils/validator';
 import { checkSignup } from './utils/validator';
 
@@ -14,6 +16,14 @@ var app: express.Express = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+(<any>mongoose).Promise = bluebird;
+mongoose.connect(MLAB_URI).then(
+    () => { /** ready to use. The `mongoose.connect()` promise resolves to undefined. */ },
+).catch(err => {
+    console.log("MongoDB connection error. Please make sure MongoDB is running. " + err);
+    // process.exit();
+});
 
 app.use(session({
     resave: true,
