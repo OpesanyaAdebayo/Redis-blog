@@ -1,5 +1,5 @@
 import request from 'supertest';
-import app from "../src/app";
+import app from "../../src/app";
 
 describe("GET Pages", () => {
   it("should return 200 when home page is requested", (done) => {
@@ -40,5 +40,17 @@ describe("POST signup", () => {
         expect(res.body.error).not.toBe(undefined);
         done();
       });
+  });
+  
+  it("should return some defined error message with valid parameters", (done) => {
+    return request(app).post("/login")
+      .send({ email: "meet@me.com" })
+      .send({ password: "zcqwpo9" })
+      .expect(401)
+      .end(function (err, res) {
+        expect(res.body.error).not.toBe(undefined)
+        done();
+      });
+
   });
 });
