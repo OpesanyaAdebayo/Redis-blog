@@ -5,7 +5,7 @@ import { validationResult } from 'express-validator/check';
 import redis from 'redis';
 
 import { RedisClient, saveUser } from '../database/redis';
-import { default as User, userType, } from '../models/User';
+import { default as User, userType } from '../models/User';
 export let getHome = (req: Request, res: Response, next: NextFunction) => {
     if (req.session!.userID) {
         return res
@@ -117,7 +117,7 @@ export let postSignup = (req: Request, res: Response, next: NextFunction) => {
     User.findOne({ email: req.body.email }, (err, existingUser) => {
         if (err) return next(err);
         if (existingUser) {
-            res
+            return res
                 .status(401)
                 .json({ error: "account with that email already exists." });
         }

@@ -36,12 +36,11 @@ describe("POST signup", () => {
       .send({ password: "dz" })
       .expect(401)
       .end(function (err, res) {
-        console.log(res.body)
         expect(res.body.error).not.toBe(undefined);
         done();
       });
   });
-  
+
   it("should return some defined error message with valid parameters", (done) => {
     return request(app).post("/login")
       .send({ email: "meet@me.com" })
