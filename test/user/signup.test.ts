@@ -40,16 +40,4 @@ describe("POST signup", () => {
         done();
       });
   });
-
-  it("should return some defined error message with valid parameters", (done) => {
-    return request(app).post("/login")
-      .send({ email: "meet@me.com" })
-      .send({ password: "zcqwpo9" })
-      .expect(401)
-      .end(function (err, res) {
-        expect(res.body.error).not.toBe(undefined)
-        done();
-      });
-
-  });
 });
