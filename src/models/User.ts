@@ -1,14 +1,17 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
-export type userType = mongoose.MongooseDocument & {
+import { postList } from "./Post";
+export type userType = mongoose.Document & {
     email?: string,
     password?: string,
-    comparePassword?: comparePasswordFunction
+    comparePassword?: comparePasswordFunction,
+    posts?: Array<postList>
 }
 
 const userSchema = new mongoose.Schema({
     email: { type: String, unique: true },
-    password: { type: String },
+    password: String,
+    posts: Array
 });
 
 userSchema.pre("save", function save(this: userType, next) {
