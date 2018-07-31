@@ -7,7 +7,6 @@ import bluebird from 'bluebird';
 
 import { RedisClient } from './database/redis';
 import { MLAB_URI, SESSION_SECRET } from './utils/secrets';
-// import { checkCreatePost, checkSignup } from './utils/validator';
 import { checkSignup, checkLogin } from './utils/validator';
 
 const RedisStore = connectRedis(session);
@@ -32,8 +31,8 @@ app.use(session({
     store: new RedisStore({ client: RedisClient })
 }));
 
-// import * as postsController from './controllers/posts';
 import * as usersController from './controllers/users';
+import * as postsController from './controllers/posts'
 
 app.get('/', usersController.getHome);
 app.get('/login', usersController.getLogin);
@@ -41,11 +40,11 @@ app.get('/signup', usersController.getSignup);
 app.get('/logout', usersController.getLogOut);
 app.post('/login', checkSignup, usersController.postLogin);
 app.post('/signup', checkLogin, usersController.postSignup);
-// app.post('/post', checkCreatePost, postsController.createPost);
+app.post('/createPost', postsController.createPost);
 
 app.use((req: Request, res: Response) => {
-    if (req.path !== '/' && req.path !== '/login' && req.path !== '/signup' && req.path !== '/post') {
-        res.sendStatus(404)
+    if (req.path !== "/" && req.path !== "/login" && req.path !== "/signup" && req.path !== "/logout" && req.path !== "/createPost") {
+      res.sendStatus(404);
     }
 });
 
