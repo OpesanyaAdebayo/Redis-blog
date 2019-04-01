@@ -19,6 +19,7 @@ export let getHome = (req: Request, res: Response) => {
     });
 };
 export let getLogin = (req: Request, res: Response) => {
+    console.log("I made an edit")
     if (req.session!.userID) {
         return res
             .status(302)
